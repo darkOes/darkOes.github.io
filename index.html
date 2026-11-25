@@ -238,7 +238,7 @@
       '  <span class="c">sound</span>         on | off',
       '  <span class="c">history</span>       your past commands',
       '  <span class="c">clear</span>         wipe the screen',
-      '  <span class="c">exit</span>          jack out',
+      '  <span class="c">exit</span>          jack out (back to GitHub)',
       '<span class="m">// some commands are not listed. netrunners find them.</span>',
     ], 2),
     whoami: async () => out([
@@ -314,9 +314,13 @@
     date: async () => out([new Date().toString().replace(/\d{4}/, '2077')]),
     echo: async (arg) => out([esc(arg || '')]),
     exit: async () => {
-      await out(['<span class="r">connection terminated...</span>', '<span class="m">see you in Night City, choom.</span>'], 25);
+      await out(['<span class="r">connection terminated...</span>', '<span class="m">see you in Night City, choom.</span>',
+        '<span class="m">→ returning to</span> <span class="c">github.com/darkOes</span>'], 25);
       await sleep(800); glitch(); await sleep(600);
-      term.innerHTML = ''; await boot(true);
+      document.body.style.transition = 'opacity .5s'; document.body.style.opacity = '0';
+      await sleep(500);
+      location.href = 'https://github.com/darkOes';
+      await sleep(5000);
     },
     // ---- hidden ----
     '0+2=1': async () => {
