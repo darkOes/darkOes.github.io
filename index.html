@@ -3,396 +3,319 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>darkOes.exe // Night City Terminal</title>
-<meta name="description" content="darkOes // AI & ML Netrunner. Jack in.">
+<title>darkOes.exe // AI · Cyber · Web</title>
+<meta name="description" content="darkOes — AI & ML netrunner. Neural systems, cybersecurity tools and web builds from Night City.">
 <meta name="theme-color" content="#05080c">
+<meta property="og:title" content="darkOes.exe // AI · Cyber · Web">
+<meta property="og:description" content="Neural systems, cybersecurity tools and web builds. Jack in.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305080c'/%3E%3Cpolyline points='9,8 17,16 9,24' fill='none' stroke='%23FCEE0A' stroke-width='4'/%3E%3C/svg%3E">
 <style>
-  :root{
-    --bg:#05080c; --fg:#c9d1d9; --y:#FCEE0A; --c:#00F0FF; --r:#FF2A6D; --g:#39FF14; --mut:#6b7a86;
-  }
+  :root{--bg:#05080c;--panel:#0b1118;--line:#1d2a36;--fg:#c9d1d9;--w:#e6edf3;--y:#FCEE0A;--c:#00F0FF;--r:#FF2A6D;--g:#39FF14;--m:#6b7a86}
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
-    font:15px/1.55 'JetBrains Mono','Fira Code',Consolas,'Courier New',monospace}
-  body{overflow:hidden}
-  body.cyan{--y:#00F0FF;--c:#FCEE0A}
-  body.red{--y:#FF2A6D;--c:#00F0FF}
-  .crt{position:fixed;inset:0;pointer-events:none;z-index:5;
-    background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px)}
-  .vignette{position:fixed;inset:0;pointer-events:none;z-index:4;
-    background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65))}
-  .frame{position:fixed;inset:12px;border:2px solid var(--c);border-radius:6px;pointer-events:none;z-index:3;
-    box-shadow:0 0 12px color-mix(in srgb,var(--c) 60%,transparent),inset 0 0 12px color-mix(in srgb,var(--c) 30%,transparent);
-    animation:pulse 3s ease-in-out infinite}
-  .frame::before,.frame::after{content:"";position:absolute;width:30px;height:30px;border:4px solid var(--y)}
-  .frame::before{top:-3px;left:-3px;border-right:0;border-bottom:0}
-  .frame::after{bottom:-3px;right:-3px;border-left:0;border-top:0}
-  @keyframes pulse{50%{opacity:.6}}
-  .bar{position:fixed;top:12px;left:12px;right:12px;height:38px;display:flex;align-items:center;justify-content:space-between;
-    padding:0 18px;border-bottom:1px solid color-mix(in srgb,var(--c) 35%,transparent);z-index:2;font-size:12px;color:var(--fg)}
-  .bar b{color:#e6edf3}
-  .bar .right{color:var(--y);letter-spacing:1px}
-  .bar .right span{color:var(--fg);margin-right:10px}
-  #term{position:fixed;top:52px;left:12px;right:12px;bottom:12px;overflow-y:auto;padding:18px 24px 40px;z-index:1;
-    scrollbar-width:thin;scrollbar-color:var(--y) transparent}
-  .line{white-space:pre-wrap;word-break:break-word;min-height:1.55em}
-  .y{color:var(--y)} .c{color:var(--c)} .r{color:var(--r)} .g{color:var(--g);text-shadow:0 0 6px var(--g)} .m{color:var(--mut)}
-  .w{color:#e6edf3} .b{font-weight:700}
-  .glow{text-shadow:0 0 8px currentColor}
+  html{scroll-behavior:smooth}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 'JetBrains Mono','Fira Code',Consolas,'Courier New',monospace}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px);z-index:50}
   a{color:var(--c)}
-  .prompt-row{display:flex;align-items:baseline;gap:.6ch}
-  .prompt{color:var(--y);white-space:nowrap}
-  .prompt .c{color:var(--c)}
-  #cmd{flex:1;background:transparent;border:0;outline:0;color:#e6edf3;font:inherit;caret-color:var(--y);padding:0;min-width:0}
-  .logo{color:var(--y);text-shadow:0 0 10px color-mix(in srgb,var(--y) 70%,transparent);line-height:1.15;font-size:clamp(7px,1.55vw,15px)}
-  .glitch{animation:glitch .5s steps(2) 3}
-  @keyframes glitch{0%{transform:translate(0);filter:none}25%{transform:translate(-4px,1px);filter:hue-rotate(90deg)}
-    50%{transform:translate(4px,-1px);filter:invert(1)}75%{transform:translate(-2px,0)}100%{transform:translate(0);filter:none}}
-  body.shake{animation:shake .4s 2}
-  @keyframes shake{25%{transform:translate(3px,-2px)}50%{transform:translate(-3px,2px)}75%{transform:translate(2px,1px)}}
-  .flash{position:fixed;inset:0;background:var(--r);opacity:0;pointer-events:none;z-index:6;animation:flash .6s}
-  @keyframes flash{20%{opacity:.35}100%{opacity:0}}
-  /* moon scene */
-  #moon{position:fixed;inset:0;z-index:7;display:none;background:#020306;overflow:hidden;cursor:pointer}
-  #moon.on{display:block}
-  #moon canvas{position:absolute;inset:0;width:100%;height:100%}
-  #moon .orb{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;
-    background:radial-gradient(circle at 35% 35%,#fffbe0,#f2e6a6 55%,#b9ac6d);box-shadow:0 0 60px 10px rgba(255,246,194,.5);
-    animation:approach 7s cubic-bezier(.5,0,.3,1) forwards}
-  @keyframes approach{to{transform:scale(9)}}
-  #moon .txt{position:absolute;left:0;right:0;bottom:12%;text-align:center;color:var(--y);font-size:clamp(16px,3vw,28px);
-    letter-spacing:3px;opacity:0;animation:fadein 2s 4s forwards;text-shadow:0 0 12px var(--y)}
-  #moon .hint{position:absolute;left:0;right:0;bottom:5%;text-align:center;color:var(--mut);font-size:12px;opacity:0;animation:fadein 1s 6.5s forwards}
-  @keyframes fadein{to{opacity:1}}
-  @media (max-width:600px){#term{padding:14px 14px 40px}.bar{font-size:10px;padding:0 12px}.bar .right span{display:none}}
-  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  ::selection{background:var(--y);color:#000}
+  nav{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 20px;
+    background:rgba(5,8,12,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);font-size:13px}
+  nav .logo{color:var(--y);text-decoration:none;letter-spacing:2px;font-weight:700}
+  nav .links{display:flex;gap:18px;flex-wrap:wrap}
+  nav .links a{color:var(--fg);text-decoration:none}
+  nav .links a:hover{color:var(--y)}
+  nav .logo{white-space:nowrap}
+  @media (max-width:560px){nav{padding:10px 14px;font-size:12px}nav .links{gap:12px;flex-wrap:nowrap}nav .links a.opt{display:none}}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 18px}
+
+  /* hero */
+  .hero{position:relative;min-height:86vh;display:flex;align-items:center;overflow:hidden;border-bottom:1px solid var(--line)}
+  .city{position:absolute;inset:0;z-index:0;opacity:.9}
+  .city canvas{width:100%;height:100%;display:block}
+  .hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--bg) 0%,rgba(5,8,12,.85) 45%,rgba(5,8,12,.2) 100%)}
+  .hero .wrap{position:relative;z-index:2;width:100%}
+  .tag{color:var(--c);letter-spacing:4px;font-size:12px}
+  .title{position:relative;display:inline-block;margin:10px 0 6px;font-size:clamp(40px,9vw,92px);line-height:1;color:var(--y);font-weight:800;
+    text-shadow:0 0 24px rgba(252,238,10,.35)}
+  .title::before,.title::after{content:attr(data-t);position:absolute;inset:0;opacity:0}
+  .title::before{color:var(--r);animation:gA 4s infinite}
+  .title::after{color:var(--c);animation:gB 4s infinite}
+  @keyframes gA{0%,88%,100%{opacity:0;transform:none}89%{opacity:.8;transform:translate(-5px,2px);clip-path:inset(10% 0 55% 0)}91%{opacity:.8;transform:translate(4px,-1px);clip-path:inset(60% 0 10% 0)}92%{opacity:0}}
+  @keyframes gB{0%,88%,100%{opacity:0;transform:none}89%{opacity:.8;transform:translate(5px,-2px);clip-path:inset(40% 0 30% 0)}91%{opacity:.8;transform:translate(-3px,1px);clip-path:inset(5% 0 80% 0)}92%{opacity:0}}
+  .role{font-size:clamp(16px,2.6vw,24px);color:var(--w);letter-spacing:2px}
+  .typed{color:var(--c);min-height:1.6em;margin-top:14px}
+  .typed::after{content:"█";color:var(--y);animation:blink 1s steps(1) infinite;margin-left:2px}
+  @keyframes blink{50%{opacity:0}}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+  .btn{display:inline-block;padding:12px 20px;border:1px solid var(--y);color:var(--y);text-decoration:none;letter-spacing:2px;font-size:14px;position:relative;
+    clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+  .btn.fill{background:var(--y);color:#000;font-weight:700}
+  .btn:hover{background:var(--y);color:#000}
+  .btn.fill:hover{background:var(--c);border-color:var(--c)}
+  .status{margin-top:26px;font-size:13px;color:var(--m)}
+  .status b{color:var(--g);font-weight:400}
+
+  section{padding:80px 0;border-bottom:1px solid var(--line)}
+  h2{margin:0 0 8px;font-size:clamp(24px,4vw,36px);color:var(--w);letter-spacing:2px}
+  h2 span{color:var(--y)}
+  .lead{color:var(--m);margin:0 0 36px;max-width:640px}
+
+  /* pillars */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:860px){.pillars{grid-template-columns:1fr}}
+  .pill{border:1px solid var(--line);background:var(--panel);padding:22px;position:relative;transition:border-color .2s,transform .2s}
+  .pill:hover{border-color:var(--y);transform:translateY(-3px)}
+  .pill .ic{font-size:13px;color:#000;background:var(--y);display:inline-block;padding:2px 8px;letter-spacing:2px;margin-bottom:12px}
+  .pill.cy .ic{background:var(--r);color:#fff} .pill.web .ic{background:var(--c)}
+  .pill h3{margin:0 0 8px;color:var(--w);font-size:18px}
+  .pill p{margin:0 0 14px;font-size:14px;color:var(--fg)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chips span{font-size:12px;border:1px solid #2b3946;padding:1px 8px;color:var(--m)}
+
+  /* projects */
+  .projects{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media (max-width:860px){.projects{grid-template-columns:1fr}}
+  .proj{border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;transition:border-color .2s,box-shadow .2s}
+  .proj:hover{border-color:var(--y);box-shadow:0 0 24px rgba(252,238,10,.12)}
+  .proj .shot{height:170px;position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:#03060a}
+  .proj .body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .proj .kind{font-size:11px;letter-spacing:2px}
+  .proj h3{margin:0;color:var(--w);font-size:19px}
+  .proj p{margin:0;font-size:14px;flex:1}
+  .proj .acts{display:flex;gap:10px;flex-wrap:wrap}
+  .proj .acts a{font-size:13px;padding:6px 12px;border:1px solid var(--y);color:var(--y);text-decoration:none}
+  .proj .acts a.ghost{border-color:#2b3946;color:var(--fg)}
+  .proj .acts a:hover{background:var(--y);color:#000;border-color:var(--y)}
+  /* mini previews */
+  .mx{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:18px 40px;align-content:center;font-size:14px;color:var(--w);text-align:center}
+  .mx span{padding:3px 0}
+  .mx span.h{background:rgba(252,238,10,.1)}
+  .mx span.s{background:var(--y);color:#000}
+  .pw{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 34px;gap:12px}
+  .pw .in{border:1px solid var(--c);padding:8px 12px;color:var(--w);letter-spacing:3px}
+  .pw .bars{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+  .pw .bars i{height:8px;background:#141d26;animation:fillbar 4s infinite}
+  .pw .bars i:nth-child(1){animation-delay:0s}.pw .bars i:nth-child(2){animation-delay:.4s}.pw .bars i:nth-child(3){animation-delay:.8s}.pw .bars i:nth-child(4){animation-delay:1.2s}.pw .bars i:nth-child(5){animation-delay:1.6s}
+  @keyframes fillbar{0%,10%{background:#141d26}20%,80%{background:var(--g);box-shadow:0 0 8px var(--g)}100%{background:#141d26}}
+  .pw b{color:var(--g);letter-spacing:3px;font-size:14px}
+  .ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 30px;gap:8px;font-size:14px}
+  .ph .u{word-break:break-all;color:var(--m)} .ph .u em{color:var(--r);font-style:normal;background:rgba(255,42,109,.15)} .ph .u u{color:var(--y)}
+  .ph .v{color:var(--r);letter-spacing:3px}
+  .nn{position:absolute;inset:0}
+  .nn canvas{width:100%;height:100%;display:block}
+
+  /* terminal cta */
+  .term{border:1px solid var(--c);background:#03060a;padding:22px;font-size:14px;box-shadow:0 0 30px rgba(0,240,255,.08)}
+  .term .l{white-space:pre-wrap}
+  .term .p{color:var(--y)} .term .p i{color:var(--c);font-style:normal}
+  .term .o{color:var(--m)}
+  .stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+  .stack span{border:1px solid var(--line);padding:4px 10px;font-size:13px;color:var(--fg)}
+  footer{padding:40px 0;text-align:center;color:var(--m);font-size:13px}
+  footer .moon{color:var(--y)}
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
+  .reveal.on{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<div class="frame"></div>
-<div class="vignette"></div>
-<div class="crt"></div>
-<div class="bar"><div>darkOes / <b>neural_link.sh</b></div><div class="right"><span>SYS v2.0.0</span>✓ ✕</div></div>
-<div id="term" aria-live="polite"></div>
-<div id="moon"><canvas></canvas><div class="orb"></div><div class="txt">NEVER FADE AWAY 🌙</div><div class="hint">[ click or press any key to return ]</div></div>
+<nav>
+  <a class="logo" href="#top">&gt; darkOes.exe</a>
+  <div class="links">
+    <a href="#about" class="opt">about</a>
+    <a href="#projects">projects</a>
+    <a href="terminal/">terminal</a>
+    <a href="https://github.com/darkOes">github ↗</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="city"><canvas id="city"></canvas></div>
+  <div class="wrap">
+    <div class="tag">[ NEURAL LINK ESTABLISHED // WELCOME TO NIGHT CITY ]</div>
+    <h1 class="title" data-t="darkOes.exe">darkOes.exe</h1>
+    <div class="role">AI ENGINEER // NETRUNNER</div>
+    <div class="typed" id="typed"></div>
+    <div class="cta">
+      <a class="btn fill" href="#projects">VIEW PROJECTS</a>
+      <a class="btn" href="terminal/">[ JACK IN ] TERMINAL</a>
+    </div>
+    <div class="status">status: <b>● SYSTEM ONLINE</b> &nbsp;// location: Earth // Cyberspace &nbsp;// motto: 0+2=1</div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <h2 class="reveal"><span>//</span> WHAT I BUILD</h2>
+    <p class="lead reveal">Three disciplines, one deck. Different inputs, same intelligence.</p>
+    <div class="pillars">
+      <div class="pill reveal">
+        <span class="ic">AI / ML</span>
+        <h3>Neural systems</h3>
+        <p>Models, LLM pipelines, retrieval and agents — turning raw data into something that thinks back.</p>
+        <div class="chips"><span>Python</span><span>PyTorch</span><span>TensorFlow</span><span>LLMs</span><span>RAG</span><span>Agents</span></div>
+      </div>
+      <div class="pill cy reveal">
+        <span class="ic">CYBER</span>
+        <h3>Security tooling</h3>
+        <p>Thinking like the attacker to build better ICE: password analysis, phishing detection, safe-by-default code.</p>
+        <div class="chips"><span>OWASP</span><span>Threat modeling</span><span>Linux</span><span>Network basics</span><span>Secure coding</span></div>
+      </div>
+      <div class="pill web reveal">
+        <span class="ic">WEB</span>
+        <h3>Interfaces</h3>
+        <p>Fast, dependency-free web apps with a lot of neon. Everything on this site is hand-written HTML, CSS and JS.</p>
+        <div class="chips"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Canvas</span><span>SVG</span><span>GitHub Pages</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <h2 class="reveal"><span>//</span> PROJECTS</h2>
+    <p class="lead reveal">Small, complete builds — each one runs live in your browser. No installs, no tracking.</p>
+    <div class="projects">
+
+      <article class="proj reveal">
+        <div class="shot"><div class="mx" id="mx"></div></div>
+        <div class="body">
+          <span class="kind" style="color:var(--y)">WEB · GAME · CYBER</span>
+          <h3>Breach Protocol</h3>
+          <p>A Cyberpunk-style hacking minigame. Code matrix, buffer, daemons and a trace timer. Every puzzle is generated so a full breach is always possible.</p>
+          <div class="acts"><a href="breach-protocol/">play live ▸</a><a class="ghost" href="https://github.com/darkOes/breach-protocol">source</a></div>
+        </div>
+      </article>
+
+      <article class="proj reveal">
+        <div class="shot"><div class="pw"><div class="in">••••••••••••••••</div><div class="bars"><i></i><i></i><i></i><i></i><i></i></div><b>BLACK ICE</b></div></div>
+        <div class="body">
+          <span class="kind" style="color:var(--r)">CYBER · SECURITY</span>
+          <h3>ICE Password Analyzer</h3>
+          <p>Offline password strength checker: entropy, crack-time estimates for 4 attack scenarios, pattern detection (leetspeak, keyboard walks, years) and a secure generator.</p>
+          <div class="acts"><a href="ice-password-analyzer/">try live ▸</a><a class="ghost" href="https://github.com/darkOes/ice-password-analyzer">source</a></div>
+        </div>
+      </article>
+
+      <article class="proj reveal">
+        <div class="shot"><div class="ph"><span class="u">http://<em>paypa1-secure</em>.<u>account-verify.xyz</u>/login</span><span class="v">▲ DANGEROUS // 85</span><span style="color:var(--m);font-size:12px">lookalike domain · no https · high-abuse TLD</span></div></div>
+        <div class="body">
+          <span class="kind" style="color:var(--r)">CYBER · SECURITY</span>
+          <h3>Phishing URL Scanner</h3>
+          <p>Static link analysis: lookalike and homoglyph domains, the “@” trick, IP hosts, shorteners, risky TLDs and brand abuse in subdomains — with a URL anatomy view.</p>
+          <div class="acts"><a href="phishing-url-scanner/">scan live ▸</a><a class="ghost" href="https://github.com/darkOes/phishing-url-scanner">source</a></div>
+        </div>
+      </article>
+
+      <article class="proj reveal">
+        <div class="shot"><div class="nn"><canvas id="nn"></canvas></div></div>
+        <div class="body">
+          <span class="kind" style="color:var(--g)">AI · ML</span>
+          <h3>Neural Net Playground</h3>
+          <p>Watch a neural network learn in real time. Backpropagation and Adam written from scratch, live decision boundary, loss curve and weight visualization.</p>
+          <div class="acts"><a href="neural-net-playground/">train live ▸</a><a class="ghost" href="https://github.com/darkOes/neural-net-playground">source</a></div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="jack">
+  <div class="wrap">
+    <h2 class="reveal"><span>//</span> JACK IN</h2>
+    <p class="lead reveal">Prefer the command line? There is a full interactive terminal with hidden commands.</p>
+    <div class="term reveal">
+      <div class="l"><span class="p"><i>netrunner</i>@night-city:~$</span> whoami</div>
+      <div class="l o">darkOes — AI &amp; ML Netrunner // Earth // Cyberspace</div>
+      <div class="l"><span class="p"><i>netrunner</i>@night-city:~$</span> help</div>
+      <div class="l o">whoami  skills  projects  rewrite_fate  moon  ...  // some commands are hidden</div>
+      <div class="l"><span class="p"><i>netrunner</i>@night-city:~$</span> <span style="color:var(--y)">█</span></div>
+    </div>
+    <div class="cta"><a class="btn fill" href="terminal/">OPEN TERMINAL ▸</a><a class="btn" href="https://github.com/darkOes">GITHUB PROFILE ↗</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">built by darkOes // hand-written HTML, CSS &amp; JS // hosted on GitHub Pages<br><span class="moon">never fade away 🌙</span></div>
+</footer>
 
 <script>
 (() => {
-  const term = document.getElementById('term');
-  const USER = 'netrunner', HOST = 'night-city';
-  const history = []; let hIdx = 0;
-  let sound = true, audio;
-  let busy = false;
+  // typed subtitle
+  const lines = ['Building neural networks. Debugging reality.', 'Breaking ICE so I can build better ICE.', 'Turning data into possibilities.', '0+2=1 — different inputs, same intelligence.'];
+  const el = document.getElementById('typed');
+  let li = 0, ci = 0, del = false;
+  (function tick() {
+    const s = lines[li];
+    el.textContent = s.slice(0, ci);
+    if (!del && ci < s.length) ci++;
+    else if (!del) { del = true; return setTimeout(tick, 1800); }
+    else if (ci > 0) ci--;
+    else { del = false; li = (li + 1) % lines.length; }
+    setTimeout(tick, del ? 22 : 48);
+  })();
 
-  // ---------- helpers ----------
-  const esc = s => s.replace(/[&<>]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]));
-  const sleep = ms => new Promise(r => setTimeout(r, ms));
-  function line(html = '', cls = '') {
-    const d = document.createElement('div');
-    d.className = 'line ' + cls; d.innerHTML = html; term.appendChild(d); scroll(); return d;
-  }
-  const scroll = () => { term.scrollTop = term.scrollHeight; };
-  async function typeLine(html, speed = 12) {
-    // types plain text content char by char, keeping markup
-    const d = line('');
-    const tmp = document.createElement('div'); tmp.innerHTML = html;
-    await typeNode(tmp, d, speed); return d;
-  }
-  async function typeNode(src, dst, speed) {
-    for (const n of [...src.childNodes]) {
-      if (n.nodeType === 3) {
-        const t = document.createTextNode(''); dst.appendChild(t);
-        for (const ch of n.textContent) { t.textContent += ch; if (speed) { blip(1); await sleep(speed); } }
-      } else {
-        const el = n.cloneNode(false); dst.appendChild(el); await typeNode(n, el, speed);
-      }
-      scroll();
+  // reveal on scroll
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } }), {threshold: .12});
+  document.querySelectorAll('.reveal').forEach(x => io.observe(x));
+
+  // city skyline + rain
+  const cv = document.getElementById('city'), ctx = cv.getContext('2d');
+  let W, H, buildings = [], drops = [];
+  function resize() {
+    W = cv.width = cv.clientWidth; H = cv.height = cv.clientHeight;
+    buildings = []; let x = W * 0.35;
+    while (x < W + 40) {
+      const w = 40 + Math.random() * 70, h = H * (0.25 + Math.random() * 0.55);
+      const wins = []; for (let wy = H - h + 14; wy < H - 10; wy += 16) for (let wx = x + 6; wx < x + w - 8; wx += 12) if (Math.random() < .45) wins.push([wx, wy, Math.random() < .7 ? '#FCEE0A' : '#00F0FF', Math.random()]);
+      buildings.push({x, w, h, wins, neon: Math.random() < .35 ? (Math.random() < .5 ? '#FF2A6D' : '#00F0FF') : null});
+      x += w + 4;
     }
+    drops = Array.from({length: Math.round(W / 9)}, () => ({x: Math.random() * W, y: Math.random() * H, v: 6 + Math.random() * 8, l: 8 + Math.random() * 14}));
   }
-  async function out(lines, speed = 4) { for (const l of lines) await typeLine(l, speed); }
-
-  // ---------- sound ----------
-  function blip(kind = 0) {
-    if (!sound) return;
-    try {
-      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-      if (audio.state === 'suspended') return;
-      const o = audio.createOscillator(), g = audio.createGain();
-      o.type = kind === 2 ? 'sawtooth' : 'square';
-      o.frequency.value = kind === 2 ? 110 : (kind === 1 ? 1400 + Math.random() * 300 : 600 + Math.random() * 200);
-      g.gain.value = kind === 1 ? 0.008 : 0.025;
-      o.connect(g); g.connect(audio.destination);
-      const t = audio.currentTime;
-      g.gain.exponentialRampToValueAtTime(0.0001, t + (kind === 2 ? 0.35 : 0.04));
-      o.start(t); o.stop(t + (kind === 2 ? 0.35 : 0.05));
-    } catch (e) {}
-  }
-  const unlockAudio = () => { try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {} };
-
-  // ---------- prompt ----------
-  function promptHTML() {
-    return `<span class="prompt"><span class="c">${USER}</span>@${HOST}:~$</span>`;
-  }
-  function newPrompt() {
-    const row = document.createElement('div');
-    row.className = 'line prompt-row';
-    row.innerHTML = promptHTML() + '<input id="cmd" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="command">';
-    term.appendChild(row); scroll();
-    const input = row.querySelector('#cmd');
-    input.focus();
-    input.addEventListener('keydown', onKey);
-  }
-  function freezePrompt(value) {
-    const input = document.getElementById('cmd');
-    const row = input.parentElement;
-    input.removeEventListener('keydown', onKey);
-    row.innerHTML = promptHTML() + ' <span class="w">' + esc(value) + '</span>';
-  }
-
-  async function onKey(e) {
-    unlockAudio();
-    const input = e.target;
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const v = input.value; freezePrompt(v);
-      if (v.trim()) { history.push(v); }
-      hIdx = history.length;
-      busy = true; await run(v.trim()); busy = false;
-      if (!document.getElementById('moon').classList.contains('on')) newPrompt();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault(); if (hIdx > 0) { hIdx--; input.value = history[hIdx]; }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault(); if (hIdx < history.length) { hIdx++; input.value = history[hIdx] || ''; }
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      const v = input.value.toLowerCase();
-      const m = Object.keys(CMDS).filter(k => k.startsWith(v) && !HIDDEN.includes(k));
-      if (m.length === 1) input.value = m[0];
-      else if (m.length > 1) { const cur = input.value; freezePrompt(cur); line(m.join('   '), 'm'); newPrompt(); document.getElementById('cmd').value = cur; }
-    } else if (e.key === 'l' && e.ctrlKey) {
-      e.preventDefault(); term.innerHTML = ''; newPrompt();
-    } else if (e.key.length === 1) {
-      blip(0);
+  let t = 0;
+  function draw() {
+    t++;
+    ctx.clearRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W * .75, H * .3, 10, W * .75, H * .3, W * .5);
+    g.addColorStop(0, 'rgba(252,238,10,.10)'); g.addColorStop(1, 'rgba(252,238,10,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#fff6c2'; ctx.shadowColor = '#fff6c2'; ctx.shadowBlur = 30;
+    ctx.beginPath(); ctx.arc(W * .72, H * .2, 22, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+    for (const b of buildings) {
+      ctx.fillStyle = '#0a121c'; ctx.fillRect(b.x, H - b.h, b.w, b.h);
+      for (const [wx, wy, col, ph] of b.wins) { ctx.globalAlpha = .25 + .35 * (Math.sin(t * .02 + ph * 20) * .5 + .5); ctx.fillStyle = col; ctx.fillRect(wx, wy, 4, 6); }
+      ctx.globalAlpha = 1;
+      if (b.neon) { ctx.fillStyle = b.neon; ctx.shadowColor = b.neon; ctx.shadowBlur = 14; ctx.globalAlpha = Math.random() < .02 ? .2 : 1; ctx.fillRect(b.x + 4, H - b.h + 20, 4, Math.min(80, b.h * .4)); ctx.shadowBlur = 0; ctx.globalAlpha = 1; }
     }
+    ctx.strokeStyle = 'rgba(0,240,255,.35)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (const d of drops) { ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - 2, d.y + d.l); d.y += d.v; if (d.y > H) { d.y = -20; d.x = Math.random() * W; } }
+    ctx.stroke();
+    requestAnimationFrame(draw);
   }
+  addEventListener('resize', resize); resize();
+  draw();
 
-  document.addEventListener('click', () => {
-    if (window.getSelection().toString()) return;
-    const i = document.getElementById('cmd'); if (i) i.focus();
-  });
+  // breach mini-preview
+  const CODES = ['1C', '55', 'BD', 'E9', '7A', 'FF'], mx = document.getElementById('mx');
+  const cells = Array.from({length: 24}, () => { const s = document.createElement('span'); s.textContent = CODES[(Math.random() * 6) | 0]; mx.appendChild(s); return s; });
+  let row = 0;
+  setInterval(() => { cells.forEach((c, i) => { c.className = Math.floor(i / 6) === row ? 'h' : ''; }); cells[row * 6 + ((Math.random() * 6) | 0)].className = 's'; row = (row + 1) % 4; }, 700);
 
-  // ---------- effects ----------
-  function glitch() {
-    term.classList.remove('glitch'); void term.offsetWidth; term.classList.add('glitch');
-    blip(2);
-  }
-  function flash() {
-    const f = document.createElement('div'); f.className = 'flash'; document.body.appendChild(f);
-    setTimeout(() => f.remove(), 700);
-    document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake');
-  }
-
-  function moon() {
-    const m = document.getElementById('moon');
-    const cv = m.querySelector('canvas'); const ctx = cv.getContext('2d');
-    m.classList.add('on');
-    const orb = m.querySelector('.orb'), txt = m.querySelector('.txt'), hint = m.querySelector('.hint');
-    [orb, txt, hint].forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
-    const stars = Array.from({length: 260}, () => ({x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, z: Math.random()}));
-    let raf, t0 = performance.now();
-    function frame(t) {
-      const w = cv.width = innerWidth, h = cv.height = innerHeight;
-      const speed = Math.min((t - t0) / 6000, 1) * 0.012 + 0.002;
-      ctx.fillStyle = 'rgba(2,3,6,.35)'; ctx.fillRect(0, 0, w, h);
-      for (const s of stars) {
-        s.z -= speed; if (s.z <= 0.01) { s.z = 1; s.x = Math.random() * 2 - 1; s.y = Math.random() * 2 - 1; }
-        const px = w / 2 + s.x / s.z * w * 0.25, py = h / 2 + s.y / s.z * h * 0.25;
-        const r = (1 - s.z) * 2.2;
-        ctx.fillStyle = Math.random() < 0.02 ? '#FCEE0A' : '#cfe9ff';
-        ctx.fillRect(px, py, r, r);
-      }
-      raf = requestAnimationFrame(frame);
+  // neural net mini-preview
+  const nn = document.getElementById('nn'), nx = nn.getContext('2d');
+  function nnDraw(time) {
+    const w = nn.width = nn.clientWidth, h = nn.height = nn.clientHeight;
+    const layers = [2, 5, 5, 1], pos = layers.map((n, l) => Array.from({length: n}, (_, j) => [w * .15 + l * w * .7 / 3, h / 2 + (j - (n - 1) / 2) * 26]));
+    for (let l = 0; l < 3; l++) for (const a of pos[l]) for (const b of pos[l + 1]) {
+      const s = Math.sin(time / 700 + a[1] * .05 + b[1] * .03 + l);
+      nx.strokeStyle = s > 0 ? `rgba(252,238,10,${.15 + .5 * s})` : `rgba(0,240,255,${.15 - .5 * s})`;
+      nx.lineWidth = .5 + 2 * Math.abs(s); nx.beginPath(); nx.moveTo(...a); nx.lineTo(...b); nx.stroke();
     }
-    raf = requestAnimationFrame(frame);
-    const close = () => {
-      cancelAnimationFrame(raf); m.classList.remove('on');
-      m.removeEventListener('click', close); document.removeEventListener('keydown', close, true);
-      line('<span class="m">// signal restored.</span>'); newPrompt();
-    };
-    setTimeout(() => { m.addEventListener('click', close); document.addEventListener('keydown', close, true); }, 1500);
+    for (const layer of pos) for (const [x, y] of layer) { nx.beginPath(); nx.arc(x, y, 6, 0, 7); nx.fillStyle = '#05080c'; nx.fill(); nx.strokeStyle = '#39FF14'; nx.lineWidth = 2; nx.stroke(); }
+    requestAnimationFrame(nnDraw);
   }
-
-  // ---------- commands ----------
-  const HIDDEN = ['0+2=1', 'sudo', 'david', 'lucy', 'rebecca', 'smasher', 'rm', 'sudo kill adam_smasher', 'jack', 'neofetch', 'matrix'];
-  const CMDS = {
-    help: async () => out([
-      '<span class="y b">AVAILABLE COMMANDS</span>',
-      '  <span class="c">whoami</span>        who is behind the deck',
-      '  <span class="c">about</span>         mission statement',
-      '  <span class="c">skills</span>        installed cyberware',
-      '  <span class="c">ls</span> / <span class="c">cat</span>      browse data shards',
-      '  <span class="c">contact</span>       open a channel',
-      '  <span class="c">rewrite_fate</span>  run the impossible script',
-      '  <span class="c">moon</span>          go where they wanted to go',
-      '  <span class="c">theme</span>         yellow | cyan | red',
-      '  <span class="c">sound</span>         on | off',
-      '  <span class="c">history</span>       your past commands',
-      '  <span class="c">clear</span>         wipe the screen',
-      '  <span class="c">exit</span>          jack out (back to GitHub)',
-      '<span class="m">// some commands are not listed. netrunners find them.</span>',
-    ], 2),
-    whoami: async () => out([
-      '<span class="y b">darkOes</span>',
-      '<span class="m">├─</span> role ........ <span class="w">AI &amp; ML Netrunner</span>',
-      '<span class="m">├─</span> location .... <span class="w">Earth // Cyberspace</span>',
-      '<span class="m">├─</span> status ...... <span class="g">SYSTEM ONLINE</span>',
-      '<span class="m">└─</span> motto ....... <span class="y">0+2=1 — different inputs, same intelligence.</span>',
-    ]),
-    about: async () => out([
-      'Building neural systems. Debugging reality.',
-      'Turning data into possibilities — models, agents, retrieval, and',
-      'whatever comes after them.',
-      '<span class="y">Never fade away from the source code.</span>',
-    ], 10),
-    skills: async () => {
-      const s = [['Python', 95], ['PyTorch', 85], ['TensorFlow', 70], ['LLMs', 90], ['RAG', 85], ['Agents', 88], ['Docker', 70], ['Linux', 80]];
-      await typeLine('<span class="y b">INSTALLED CYBERWARE</span>', 4);
-      for (const [n, v] of s) {
-        const bars = Math.round(v / 5);
-        await typeLine(`  <span class="w">${n.padEnd(11)}</span><span class="y">${'█'.repeat(bars)}</span><span class="m">${'░'.repeat(20 - bars)}</span> <span class="c">${v}%</span>`, 2);
-      }
-    },
-    ls: async () => out(['<span class="c">shard_01.txt</span>   <span class="c">shard_02.txt</span>   <span class="r">encrypted.shard</span>   <span class="m">.adam_smasher.log</span>']),
-    cat: async (arg) => {
-      const files = {
-        'shard_01.txt': ['> origin: Night City', '> objective: build intelligence that outlives its creator.', '> note: chrome is temporary. code is forever.'],
-        'shard_02.txt': ['> 0 + 2 = 1', '> two inputs. one result.', '> some math only makes sense to people who lost something.'],
-        'encrypted.shard': ['<span class="r">ACCESS DENIED.</span> try: <span class="c">decrypt encrypted.shard</span>'],
-        '.adam_smasher.log': ['<span class="r">[ERR] process terminated by unknown netrunner.</span>', '<span class="m">// you know who you are.</span>'],
-      };
-      if (!arg) return out(['<span class="r">cat: missing file operand</span>']);
-      if (!files[arg]) return out([`<span class="r">cat: ${esc(arg)}: no such shard</span>`]);
-      await out(files[arg], 8);
-    },
-    decrypt: async (arg) => {
-      if (arg !== 'encrypted.shard') return out(['<span class="r">decrypt: nothing to decrypt</span>']);
-      const d = line(''); for (let i = 0; i <= 20; i++) { d.innerHTML = `<span class="y">decrypting</span> [${'█'.repeat(i)}${'░'.repeat(20 - i)}] ${i * 5}%`; blip(1); await sleep(70); }
-      glitch();
-      await out(['', '<span class="y">  "I wanna go to the moon."</span>', '', '  > destination: <span class="c">MOON</span>', '  > passengers:  <span class="c">2</span>', '  > hint:        type <span class="c">moon</span>'], 18);
-    },
-    contact: async () => out([
-      'channel open:',
-      '  github  → <a href="https://github.com/darkOes" target="_blank" rel="noopener">github.com/darkOes</a>',
-      '<span class="m">// leave a star. netrunners notice.</span>',
-    ]),
-    rewrite_fate: async () => {
-      await typeLine('<span class="m">&gt;&gt;&gt; loading neural_link.py ...</span>', 6);
-      await sleep(300);
-      const steps = [
-        ['david.alive', 'True'], ['rebecca.alive', 'True'], ['lucy.happy', 'True'],
-      ];
-      for (const [k, v] of steps) { await typeLine(`<span class="w">${k}</span> = <span class="g">${v}</span>`, 22); await sleep(150); }
-      await typeLine('<span class="w">adam_smasher</span>.terminate()', 22);
-      flash(); glitch(); await sleep(500);
-      await typeLine('<span class="r">[SIGKILL] adam_smasher ......... TERMINATED</span>', 6);
-      await sleep(400);
-      await typeLine('<span class="y glow b">return "Never Fade Away 🌙"</span>', 30);
-    },
-    moon: async () => { await typeLine('<span class="c">plotting course ...</span>', 20); await sleep(500); moon(); },
-    theme: async (arg) => {
-      document.body.classList.remove('cyan', 'red');
-      if (arg === 'cyan' || arg === 'red') document.body.classList.add(arg);
-      else if (arg && arg !== 'yellow') return out(['usage: theme yellow | cyan | red']);
-      await out([`theme set → <span class="y">${esc(arg || 'yellow')}</span>`]);
-    },
-    sound: async (arg) => {
-      if (arg === 'on') sound = true; else if (arg === 'off') sound = false; else sound = !sound;
-      await out([`sound: <span class="y">${sound ? 'on' : 'off'}</span>`]);
-    },
-    history: async () => out(history.map((h, i) => `<span class="m">${String(i + 1).padStart(3)}</span>  ${esc(h)}`)),
-    clear: async () => { term.innerHTML = ''; },
-    date: async () => out([new Date().toString().replace(/\d{4}/, '2077')]),
-    echo: async (arg) => out([esc(arg || '')]),
-    exit: async () => {
-      await out(['<span class="r">connection terminated...</span>', '<span class="m">see you in Night City, choom.</span>',
-        '<span class="m">→ returning to</span> <span class="c">github.com/darkOes</span>'], 25);
-      await sleep(800); glitch(); await sleep(600);
-      document.body.style.transition = 'opacity .5s'; document.body.style.opacity = '0';
-      await sleep(500);
-      location.href = 'https://github.com/darkOes';
-      await sleep(5000);
-    },
-    // ---- hidden ----
-    '0+2=1': async () => {
-      glitch();
-      await out(['<span class="y b">0 + 2 = 1</span>', '', 'weak + talia → <span class="r">rescue failed</span>',
-        '<span class="m">some equations are not math. they are a promise.</span>'], 20);
-    },
-    neofetch: async () => out([
-      '<span class="y">   ▄▄▄▄▄▄▄   </span>  <span class="y b">darkOes</span>@<span class="c">night-city</span>',
-      '<span class="y">  █ ▀▄▄▀ █  </span>  ---------------------',
-      '<span class="y">  █ ▄▀▀▄ █  </span>  <span class="c">OS</span>: NetrunnerOS 2077',
-      '<span class="y">   ▀▀▀▀▀▀▀   </span>  <span class="c">Deck</span>: Militech Paraline',
-      '               <span class="c">Kernel</span>: neural_link 2.0.0',
-      '               <span class="c">Shell</span>: jack-in.sh',
-      '               <span class="c">Cyberware</span>: Python, PyTorch, LLMs, RAG',
-      '               <span class="c">Humanity</span>: <span class="g">intact</span>',
-    ], 1),
-    matrix: async () => out(['<span class="r">wrong franchise, choom.</span>']),
-    sudo: async (arg) => {
-      if (/kill\s+adam_smasher/.test(arg || '')) { flash(); glitch(); return out(['<span class="r">[root] adam_smasher: process killed.</span>', '<span class="y">for david.</span>'], 20); }
-      await out(['<span class="r">nice try. this incident will be reported to Arasaka.</span>']);
-    },
-    rm: async (arg) => { if (/-rf/.test(arg || '')) { glitch(); return out(['<span class="r">rm: refusing to delete Night City.</span>']); } await out(['rm: missing operand']); },
-    david: async () => out(['<span class="y">"I\'m gonna be a legend."</span>'], 20),
-    lucy: async () => out(['<span class="c">see you on the moon. 🌙</span>'], 20),
-    rebecca: async () => out(['<span class="r">🔫🔫 small but loud.</span>'], 20),
-    jack: async (arg) => out([arg === 'in' ? '<span class="g">you are already in.</span>' : 'did you mean: jack in?']),
-  };
-
-  async function run(raw) {
-    if (!raw) return;
-    const [name, ...rest] = raw.split(/\s+/);
-    const key = name.toLowerCase();
-    const arg = rest.join(' ');
-    if (key === 'sudo') return CMDS.sudo(arg);
-    if (raw.replace(/\s+/g, '') === '0+2=1') return CMDS['0+2=1']();
-    const fn = CMDS[key];
-    if (fn) return fn(arg);
-    blip(2);
-    await out([`<span class="r">command not found:</span> ${esc(name)}  <span class="m">— try</span> <span class="c">help</span>`]);
-  }
-
-  // ---------- boot ----------
-  const LOGO = [
-    '     _            _     ___               ',
-    '  __| | __ _ _ __| | __/ _ \\  ___  ___    ',
-    ' / _` |/ _` | \'__| |/ / | | |/ _ \\/ __|   ',
-    '| (_| | (_| | |  |   <| |_| |  __/\\__ \\   ',
-    ' \\__,_|\\__,_|_|  |_|\\_\\\\___/ \\___||___/.exe',
-  ];
-  async function boot(fast) {
-    const seq = [
-      ['<span class="m">[BIOS] Militech Paraline cyberdeck ............. </span><span class="g">OK</span>', 2],
-      ['<span class="m">[BOOT] mounting /dev/neural0 ................... </span><span class="g">OK</span>', 2],
-      ['<span class="y">$ initialize neural_link</span>', 25],
-      ['<span class="c">→</span> loading python modules...', 3],
-      ['<span class="c">→</span> loading llm stack...', 3],
-      ['<span class="c">→</span> loading vector databases...', 3],
-      ['<span class="c">→</span> connecting to agents...', 3],
-      ['<span class="c">→</span> <span class="g">access granted.</span>', 3],
-    ];
-    if (!fast) for (const [l, s] of seq) { await typeLine(l, s); await sleep(120); }
-    line('');
-    const pre = line('', 'logo'); pre.textContent = LOGO.join('\n');
-    glitch();
-    line('');
-    await typeLine('<span class="y b">[ NEURAL LINK ESTABLISHED // WELCOME TO NIGHT CITY ]</span>', fast ? 0 : 8);
-    line('<span class="m">type</span> <span class="c">help</span> <span class="m">to see commands. tab completes. ↑↓ history.</span>');
-    line('');
-  }
-
-  boot(false).then(newPrompt);
+  requestAnimationFrame(nnDraw);
 })();
 </script>
 </body>
