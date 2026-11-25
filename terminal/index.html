@@ -223,7 +223,7 @@
   }
 
   // ---------- commands ----------
-  const HIDDEN = ['0+2=1', 'sudo', 'david', 'lucy', 'rebecca', 'smasher', 'rm', 'sudo kill adam_smasher', 'jack', 'neofetch', 'matrix'];
+  const HIDDEN = ['0+2=1', 'sudo', 'david', 'lucy', 'rebecca', 'smasher', 'rm', 'sudo kill adam_smasher', 'jack', 'neofetch', 'matrix', 'decode'];
   const CMDS = {
     help: async () => out([
       '<span class="y b">AVAILABLE COMMANDS</span>',
@@ -265,11 +265,19 @@
         await typeLine(`  <span class="w">${n.padEnd(11)}</span><span class="y">${'█'.repeat(bars)}</span><span class="m">${'░'.repeat(20 - bars)}</span> <span class="c">${v}%</span>`, 2);
       }
     },
-    ls: async () => out(['<span class="c">shard_01.txt</span>   <span class="c">shard_02.txt</span>   <span class="r">encrypted.shard</span>   <span class="m">.adam_smasher.log</span>']),
+    ls: async () => out(['<span class="c">shard_01.txt</span>   <span class="c">shard_02.txt</span>   <span class="y">teen.txt</span>   <span class="r">encrypted.shard</span>   <span class="m">.adam_smasher.log</span>']),
     cat: async (arg) => {
       const files = {
         'shard_01.txt': ['> origin: Night City', '> objective: build intelligence that outlives its creator.', '> note: chrome is temporary. code is forever.'],
         'shard_02.txt': ['> 0 + 2 = 1', '> two inputs. one result.', '> some math only makes sense to people who lost something.'],
+        'teen.txt': [
+          '<span class="y b">TEƎN</span> <span class="m">// live product // </span><a href="https://www.te3n.life/pl" target="_blank" rel="noopener">te3n.life</a>',
+          '> decoding the digital world for teens, parents and teachers.',
+          '> 🔤 slang decoder   — words, emoji, the intent behind them',
+          '> 🎯 training        — spot fake photos and AI personas',
+          '> 💬 ask an expert   — support, anonymous reporting',
+          '<span class="m">// type</span> <span class="c">open teen</span> <span class="m">to visit. psst… try</span> <span class="c">decode siarówa</span>',
+        ],
         'encrypted.shard': ['<span class="r">ACCESS DENIED.</span> try: <span class="c">decrypt encrypted.shard</span>'],
         '.adam_smasher.log': ['<span class="r">[ERR] process terminated by unknown netrunner.</span>', '<span class="m">// you know who you are.</span>'],
       };
@@ -284,17 +292,26 @@
       await out(['', '<span class="y">  "I wanna go to the moon."</span>', '', '  > destination: <span class="c">MOON</span>', '  > passengers:  <span class="c">2</span>', '  > hint:        type <span class="c">moon</span>'], 18);
     },
     projects: async () => out([
+      '<span class="y b">LIVE PRODUCT</span>',
+      '  <span class="c">teen</span>       <span class="y">★ TEƎN</span> — decoding the digital world      <span class="m">[te3n.life]</span>',
+      '',
       '<span class="y b">LIVE BUILDS</span>',
       '  <span class="c">breach</span>     Breach Protocol — hacking minigame        <span class="m">[web · cyber]</span>',
       '  <span class="c">ice</span>        ICE Password Analyzer — offline strength  <span class="m">[cyber]</span>',
       '  <span class="c">phish</span>      Phishing URL Scanner — link heuristics    <span class="m">[cyber]</span>',
       '  <span class="c">neural</span>     Neural Net Playground — live backprop     <span class="m">[ai · ml]</span>',
-      '<span class="m">// type</span> <span class="c">open breach</span> <span class="m">(or ice / phish / neural)</span>',
+      '<span class="m">// type</span> <span class="c">open breach</span> <span class="m">(or teen / ice / phish / neural)</span>',
     ], 2),
     open: async (arg) => {
+      if ((arg || '').toLowerCase().startsWith('te')) {
+        await out(['<span class="c">routing to te3n.life ...</span>'], 15);
+        glitch(); await sleep(500);
+        location.href = 'https://www.te3n.life/pl';
+        return sleep(5000);
+      }
       const map = {breach: 'breach-protocol', ice: 'ice-password-analyzer', phish: 'phishing-url-scanner', neural: 'neural-net-playground'};
       const key = Object.keys(map).find(k => (arg || '').toLowerCase().startsWith(k));
-      if (!key) return out(['usage: open breach | ice | phish | neural']);
+      if (!key) return out(['usage: open teen | breach | ice | phish | neural']);
       await out([`<span class="c">launching ${map[key]} ...</span>`], 15);
       glitch(); await sleep(500);
       location.href = '/' + map[key] + '/';
@@ -368,6 +385,21 @@
     david: async () => out(['<span class="y">"I\'m gonna be a legend."</span>'], 20),
     lucy: async () => out(['<span class="c">see you on the moon. 🌙</span>'], 20),
     rebecca: async () => out(['<span class="r">🔫🔫 small but loud.</span>'], 20),
+    teen: async () => CMDS.cat('teen.txt'),
+    decode: async (arg) => {
+      const D = {
+        'siarówa': 'Wstydliwa lub żenująca sytuacja; chwila kompromitacji.',
+        'siarowa': 'Wstydliwa lub żenująca sytuacja; chwila kompromitacji.',
+        'clock it': 'Przyłapanie kogoś na kłamstwie albo dostrzeżenie ukrytych intencji.',
+        'no cap': 'Bez ściemy, mówię serio.',
+        '😭': 'Często nie smutek, tylko „umieram ze śmiechu”.',
+      };
+      const w = (arg || '').toLowerCase().trim();
+      if (!w) return out(['usage: decode &lt;słowo&gt;   <span class="m">// np. decode siarówa</span>']);
+      const d = line(''); for (let i = 0; i <= 16; i++) { d.innerHTML = `<span class="y">TEƎN decoder</span> [${'█'.repeat(i)}${'░'.repeat(16 - i)}]`; blip(1); await sleep(45); }
+      if (D[w]) return out([`<span class="y b">${esc(w.toUpperCase())}</span>`, '  ' + D[w], '<span class="m">// more on</span> <a href="https://www.te3n.life/pl" target="_blank" rel="noopener">te3n.life</a>'], 10);
+      await out([`<span class="r">no local entry for</span> ${esc(w)}`, '<span class="m">// full slang index lives on</span> <a href="https://www.te3n.life/pl" target="_blank" rel="noopener">te3n.life</a>']);
+    },
     jack: async (arg) => out([arg === 'in' ? '<span class="g">you are already in.</span>' : 'did you mean: jack in?']),
   };
 
