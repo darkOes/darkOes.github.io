@@ -103,6 +103,33 @@
   .nn{position:absolute;inset:0}
   .nn canvas{width:100%;height:100%;display:block}
 
+  /* featured: TEƎN */
+  .feat{position:relative;display:grid;grid-template-columns:1.15fr 1fr;border:1px solid var(--y);background:linear-gradient(135deg,rgba(252,238,10,.06),rgba(0,240,255,.03) 60%,var(--panel));
+    margin-bottom:22px;box-shadow:0 0 40px rgba(252,238,10,.10)}
+  @media (max-width:860px){.feat{grid-template-columns:1fr}}
+  .feat .ribbon{position:absolute;top:-1px;left:-1px;background:var(--y);color:#000;font-size:11px;letter-spacing:3px;padding:3px 10px;font-weight:700;z-index:2}
+  .feat .body{padding:38px 26px 26px;display:flex;flex-direction:column;gap:14px}
+  .feat .name{position:relative;display:inline-block;margin:0;font-size:clamp(38px,6vw,58px);line-height:1;color:var(--w);font-weight:800;letter-spacing:4px}
+  .feat .name .e{color:var(--y);display:inline-block;text-shadow:0 0 18px rgba(252,238,10,.5)}
+  .feat .name::before,.feat .name::after{content:attr(data-t);position:absolute;inset:0;opacity:0}
+  .feat .name::before{color:var(--r);animation:gA 5s infinite}
+  .feat .name::after{color:var(--c);animation:gB 5s infinite}
+  .feat .live{font-size:12px;color:var(--g);letter-spacing:2px}
+  .feat .live::before{content:"● "}
+  .feat p{margin:0;font-size:15px;color:var(--fg)}
+  .feat ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:14px}
+  .feat li b{color:var(--w);font-weight:400}
+  .feat .who{display:flex;flex-wrap:wrap;gap:6px}
+  .feat .who span{font-size:12px;border:1px solid #2b3946;padding:1px 8px;color:var(--m)}
+  .feat .shot{border-left:1px solid var(--line);background:#03060a;padding:26px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:260px}
+  @media (max-width:860px){.feat .shot{border-left:0;border-top:1px solid var(--line)}}
+  .dq{font-size:12px;color:var(--m);letter-spacing:2px}
+  .dbox{border:1px solid var(--c);padding:10px 14px;color:var(--w);font-size:17px;min-height:46px}
+  .dbox .cur{color:var(--y);animation:blink 1s steps(1) infinite}
+  .dres{border-left:3px solid var(--y);padding:6px 12px;min-height:92px;transition:opacity .3s}
+  .dres b{display:block;color:var(--y);letter-spacing:3px;font-size:14px;margin-bottom:4px}
+  .dres span{font-size:13px;color:var(--fg)}
+
   /* terminal cta */
   .term{border:1px solid var(--c);background:#03060a;padding:22px;font-size:14px;box-shadow:0 0 30px rgba(0,240,255,.08)}
   .term .l{white-space:pre-wrap}
@@ -173,7 +200,29 @@
 <section id="projects">
   <div class="wrap">
     <h2 class="reveal"><span>//</span> PROJECTS</h2>
-    <p class="lead reveal">Small, complete builds — each one runs live in your browser. No installs, no tracking.</p>
+    <p class="lead reveal">One live product and a set of small, complete builds — everything runs in your browser.</p>
+
+    <article class="feat reveal" id="teen">
+      <span class="ribbon">FEATURED // LIVE PRODUCT</span>
+      <div class="body">
+        <h3 class="name" data-t="TEƎN">TE<span class="e">Ǝ</span>N</h3>
+        <span class="live">ONLINE // te3n.life</span>
+        <p>A platform that decodes the digital world for teens, parents and teachers: internet slang, fakes, AI personas and staying safe online.</p>
+        <ul>
+          <li>🔤 <b>Slang decoder</b> — type a word or emoji, get its meaning and the intent behind it</li>
+          <li>🎯 <b>Training</b> — interactive games for spotting fake photos and AI personas</li>
+          <li>💬 <b>Ask an expert</b> — support and consultations, anonymous reporting for teens</li>
+        </ul>
+        <div class="who"><span>teens</span><span>parents</span><span>teachers</span><span>digital safety</span><span>AI literacy</span></div>
+        <div class="acts" style="margin-top:4px"><a class="btn fill" href="https://www.te3n.life/pl" target="_blank" rel="noopener">VISIT TE3N.LIFE ↗</a></div>
+      </div>
+      <div class="shot" aria-hidden="true">
+        <span class="dq">// ROZSZYFRUJ SLANG</span>
+        <div class="dbox"><span id="dIn"></span><span class="cur">█</span></div>
+        <div class="dres" id="dRes"><b id="dW"></b><span id="dD"></span></div>
+      </div>
+    </article>
+
     <div class="projects">
 
       <article class="proj reveal">
@@ -301,6 +350,29 @@
   const cells = Array.from({length: 24}, () => { const s = document.createElement('span'); s.textContent = CODES[(Math.random() * 6) | 0]; mx.appendChild(s); return s; });
   let row = 0;
   setInterval(() => { cells.forEach((c, i) => { c.className = Math.floor(i / 6) === row ? 'h' : ''; }); cells[row * 6 + ((Math.random() * 6) | 0)].className = 's'; row = (row + 1) % 4; }, 700);
+
+  // TEƎN slang decoder preview
+  const SLANG = [
+    ['siarówa', 'Wstydliwa lub żenująca sytuacja; chwila kompromitacji.'],
+    ['clock it', 'Przyłapanie kogoś na kłamstwie albo dostrzeżenie ukrytych intencji.'],
+    ['no cap', 'Bez ściemy, mówię serio.'],
+    ['😭', 'Często nie smutek, tylko „umieram ze śmiechu”.']
+  ];
+  const dIn = document.getElementById('dIn'), dW = document.getElementById('dW'), dD = document.getElementById('dD'), dRes = document.getElementById('dRes');
+  let si = 0;
+  function decode() {
+    const [w, d] = SLANG[si]; let i = 0;
+    dRes.style.opacity = 0; dIn.textContent = '';
+    const iv = setInterval(() => {
+      dIn.textContent = [...w].slice(0, ++i).join('');
+      if (i >= [...w].length) {
+        clearInterval(iv);
+        setTimeout(() => { dW.textContent = w.toUpperCase(); dD.textContent = d; dRes.style.opacity = 1; }, 350);
+        si = (si + 1) % SLANG.length; setTimeout(decode, 4200);
+      }
+    }, 110);
+  }
+  decode();
 
   // neural net mini-preview
   const nn = document.getElementById('nn'), nx = nn.getContext('2d');
